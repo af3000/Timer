@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAT Countdown</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0f1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .card {
+    background: linear-gradient(135deg, #0d1b3e 0%, #091229 60%, #0a1a35 100%);
+    border: 1px solid rgba(99, 179, 237, 0.2);
+    border-radius: 20px;
+    padding: 40px 50px;
+    max-width: 600px;
+    width: 90vw;
+    box-shadow:
+      0 0 0 1px rgba(99,179,237,0.05),
+      0 20px 60px rgba(0,0,0,0.6),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(56,189,248,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #38bdf8;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: #e2e8f0;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+
+  h1 span {
+    color: #38bdf8;
+  }
+
+  .progress-wrap {
+    background: rgba(255,255,255,0.05);
+    border-radius: 100px;
+    height: 6px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, #6366f1, #38bdf8);
+    transition: width 1s linear;
+    box-shadow: 0 0 10px rgba(56,189,248,0.5);
+  }
+
+  .timer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .unit {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(99,179,237,0.12);
+    border-radius: 12px;
+    padding: 18px 10px 14px;
+    text-align: center;
+    position: relative;
+  }
+
+  .unit-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 54px);
+    line-height: 1;
+    color: #f0f9ff;
+    display: block;
+    letter-spacing: 2px;
+  }
+
+  .unit-label {
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-top: 6px;
+    display: block;
+    font-weight: 500;
+  }
+
+  .dates {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .date-block { text-align: center; }
+
+  .date-title {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #475569;
+    margin-bottom: 4px;
+  }
+
+  .date-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: #94a3b8;
+    letter-spacing: 1px;
+  }
+
+  .arrow {
+    color: #38bdf8;
+    font-size: 20px;
+    opacity: 0.5;
+  }
+
+  .status-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    margin-right: 6px;
+    box-shadow: 0 0 8px #4ade80;
+    animation: pulse 2s infinite;
+  }
+
+  .status-line {
+    font-size: 11px;
+    color: #4ade80;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+
+  #percent-label {
+    font-size: 11px;
+    color: #38bdf8;
+    text-align: right;
+    margin-top: -24px;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .done-message {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: #4ade80;
+    text-align: center;
+    letter-spacing: 3px;
+    padding: 20px 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">Testing Phase</div>
+  <h1>UAT <span>Countdown</span></h1>
+
+  <div class="status-line" id="status-line">
+    <span class="status-dot"></span> In Progress
+  </div>
+
+  <div id="timer-content">
+    <div class="timer-grid">
+      <div class="unit"><span class="unit-value" id="days">00</span><span class="unit-label">Biz Days</span></div>
+      <div class="unit"><span class="unit-value" id="hours">00</span><span class="unit-label">Hours</span></div>
+      <div class="unit"><span class="unit-value" id="minutes">00</span><span class="unit-label">Minutes</span></div>
+      <div class="unit"><span class="unit-value" id="seconds">00</span><span class="unit-label">Seconds</span></div>
+    </div>
+
+    <div id="percent-label">0% elapsed</div>
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="dates">
+    <div class="date-block">
+      <div class="date-title">Start</div>
+      <div class="date-val">Mar 02, 2026</div>
+    </div>
+    <div class="arrow">⟶</div>
+    <div class="date-block">
+      <div class="date-title">Deadline</div>
+      <div class="date-val">Mar 16, 2026</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const START = new Date('2026-03-02T00:00:00');
+  const END   = new Date('2026-03-16T23:59:59');
+
+  // Count business days between two dates (inclusive)
+  function countBusinessDays(from, to) {
+    let count = 0;
+    let d = new Date(from);
+    d.setHours(0,0,0,0);
+    const end = new Date(to);
+    end.setHours(0,0,0,0);
+    while (d <= end) {
+      const dow = d.getDay();
+      if (dow !== 0 && dow !== 6) count++;
+      d.setDate(d.getDate() + 1);
+    }
+    return count;
+  }
+
+  // Count remaining business days from today to end (inclusive of today if business day)
+  function remainingBusinessDays(from, to) {
+    const start = new Date(from);
+    start.setHours(0,0,0,0);
+    return countBusinessDays(start, to);
+  }
+
+  const TOTAL_BIZ_DAYS = countBusinessDays(START, END); // 11
+
+  const pad = n => String(Math.floor(n)).padStart(2, '0');
+
+  function tick() {
+    const now = new Date();
+    const endMs = END.getTime();
+
+    if (now >= END) {
+      document.getElementById('timer-content').innerHTML = '<div class="done-message">✓ UAT Complete!</div>';
+      document.getElementById('status-line').innerHTML = '<span style="color:#4ade80">✓ Completed</span>';
+      document.getElementById('progress').style.width = '100%';
+      document.getElementById('percent-label').textContent = '100% elapsed';
+      return;
+    }
+
+    // Remaining business days from today
+    const todayStart = new Date();
+    todayStart.setHours(0,0,0,0);
+    const bizRemaining = remainingBusinessDays(todayStart, END);
+
+    // Time remaining today for the hours/minutes/seconds sub-display
+    const msLeft = endMs - now.getTime();
+    const totalSeconds = msLeft / 1000;
+    const hours   = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+
+    document.getElementById('days').textContent    = pad(bizRemaining);
+    document.getElementById('hours').textContent   = pad(hours);
+    document.getElementById('minutes').textContent = pad(minutes);
+    document.getElementById('seconds').textContent = pad(seconds);
+
+    // Progress based on business days elapsed
+    const bizElapsed = TOTAL_BIZ_DAYS - bizRemaining;
+    const pct = Math.min(100, Math.max(0, (bizElapsed / TOTAL_BIZ_DAYS) * 100)).toFixed(1);
+    document.getElementById('progress').style.width = pct + '%';
+    document.getElementById('percent-label').textContent = pct + '% elapsed · ' + bizRemaining + ' of ' + TOTAL_BIZ_DAYS + ' business days left';
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
